@@ -1,0 +1,68 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+
+# Eclipse
+.settings
+.metadata
+.project
+.classpath
+.springBeans
+.target
+**/target
+
+# Intellij
+.idea/
+*.iml
+
+# Node
+node_modules
+package-lock.json
+
+# Solidity Coverage
+coverage/
+coverage.json
+
+#Truffle
+build/
+secrets.json
+
+#GKE Secret
+client-secret.json
+._client-secret.json
+apikey.py
+github_deploy_key
+github_deploy_key.pub
+._github_deploy_key
+
+.README.*
+**/.env*
+
+#Docker
+*.*docker*
+*.ethereum*
+.ipfs-data
+.ipfs-staging
+.elasticsearch
+.zookeeper
+.mongodb
