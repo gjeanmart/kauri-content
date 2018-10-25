@@ -66,6 +66,7 @@ Commands:
 ```
 
 3. Let’s now write a simple Smart Contract that increments and store a counter
+
   Create a file in **contracts/Counter.sol** and paste the following Solidity code
 
 ```
@@ -91,6 +92,7 @@ contract Counter {
 *You can verify that your code compiles correctly with the following command* `$ truffle compile` 
 
 4. Now, we need to create a deployment script
+
   Create a file in **migrations/2_deploy_contracts.js** and paste the following code
 
 ```
@@ -102,6 +104,7 @@ module.exports = function(deployer) {
 ```
 
 5. Finally we need to configure the connection to the Loom extdev network as well as our wallet info
+
   Install the following JavaScript dependencies:
 
   * [truffle-hdwallet-provider](https://github.com/trufflesuite/truffle-hdwallet-provider) enables to sign transactions for addresses derived from a 12-word mnemonic
@@ -178,6 +181,7 @@ $ cd frontend
 ```
 
 2. Install the necessary dependencies
+
   * [web3 (1.0.0-beta.34)](https://github.com/ethereum/web3.js/) This is the Ethereum compatible JavaScript API which implements the Generic JSON RPC spec
   * [Loom-js](https://github.com/loomnetwork/loom-js) is a JavaScript library for building browser apps & NodeJS services that interact with Loom 
 
@@ -258,6 +262,7 @@ $ npm start
 ```
 
 7. Result
+
 After copy-pasting our private key in the input field, the application is able to connect to the Loom extdev node to interact with the contract (read and increment the counter).
 
 |||image||
