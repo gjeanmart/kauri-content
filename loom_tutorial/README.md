@@ -266,7 +266,7 @@ $ npm start
 
 After copy-pasting our private key in the input field, the application is able to connect to the Loom extdev node to interact with the contract (read and increment the counter).
 
-![](https://imgur.com/a/GHId8y0)
+![](https://i.imgur.com/gMKzcX0.gif)
 
 # Notes
 
