@@ -288,9 +288,10 @@ $ npm start
 ```
 
 7. Result
+
 If Metamask is unlocked and connected to the Solok network, The web3 provider connects automatically to the notes and retrieve the counter value. When the user clicks on “Increment”, Metamask pops up to sign a transaction and send it to the POA Solok network.
 
-![](blob:https://imgur.com/482f31c6-2579-411b-8ba6-90797b09d664)
+![](https://media.giphy.com/media/3D5uh6uTIT9K68zrVa/giphy.gif)
 
 ## Links and resources
 
