@@ -1,14 +1,14 @@
 # Loom - Part 1 - Develop and deploy a smart contract on the sidechain
 
-Loom Network is a Layer 2 scaling solution for Ethereum focusing on social and gaming dApps that require a very high throughput..
+[Loom Network](https://loomx.io/) is a Layer 2 scaling solution for Ethereum focusing on social and gaming dApps that require a very high throughput. Loom SDK enables to generate a sidechain called dAppChain using a dPoS consensus optimised for high-scalability. Loom is contributing on Plasma which is a mechanism to securely transfer a digital asset (ERC20 or ERC721) to a mainchain.
 
-You can run your own DAppChain using the Loom software or connect to an existing one (plasma-chain, social-chain or gaming-chain)
+You can run your own DAppChain using the Loom software or connect to a public one (plasma-chain, social-chain or gaming-chain) running under a dPoS Ethereum blockchain to enable scalable dApps.
 
 For this tutorial, we will create and fund a Loom account, deploy a contract on the External Dev Plasma network called **extdev** and interact with it from a frontend application.
 
 ## Step 1 - Install Loom on your machine and fund an account
 
-In the first, we will install Loom software on your machine to generate a keypair.
+In the first, we will install Loom software on your machine to generate a keypair and fund the account with the Loom faucet.
 
 1. Download the executable
 
@@ -37,13 +37,13 @@ $ ls -l | grep key
 
 5. Click on *Request* and wait until you see **100 faucet-karma**
 
-||image||
+![](https://api.beta.kauri.io:443/ipfs/QmVvPTJktFDRBxyzSmFJzPXaVgWtG83JvUTLdsWKU5uadK)
 
-### Step 2: Deploy a contract on the Loom extdev network
+## Step 2: Deploy a contract on the Loom extdev network
 
 The second step consists in writing a very simple Smart Contract in Solidity and deploy it on the Loom extdev network using Truffle framework.
 
-1. Install **[Truffle](https://truffleframework.com/)** on your machine
+1. Install [Truffle](https://truffleframework.com/) on your machine
 
 ```
 $ npm install -g truffle
@@ -67,7 +67,7 @@ Commands:
 
 3. Let’s now write a simple Smart Contract that increments and store a counter
 
-  Create a file in **contracts/Counter.sol** and paste the following Solidity code
+ Create a file in `contracts/Counter.sol` and paste the following Solidity code
 
 ```
 pragma solidity ^0.4.20;
@@ -93,7 +93,7 @@ contract Counter {
 
 4. Now, we need to create a deployment script
 
-  Create a file in **migrations/2_deploy_contracts.js** and paste the following code
+  Create a file in `migrations/2_deploy_contracts.js` and paste the following code
 
 ```
 var Counter = artifacts.require("./Counter.sol");
@@ -108,7 +108,7 @@ module.exports = function(deployer) {
   Install the following JavaScript dependencies:
 
   * [truffle-hdwallet-provider](https://github.com/trufflesuite/truffle-hdwallet-provider) enables to sign transactions for addresses derived from a 12-word mnemonic
-  * [Loom-truffle-provider](https://github.com/loomnetwork/loom-truffle-provider) is an adapter that allows Truffle Suite to communicate with Loom DappChain 
+  * [loom-truffle-provider](https://github.com/loomnetwork/loom-truffle-provider) is an adapter that allows Truffle Suite to communicate with Loom DappChain 
   * [dotenv](https://www.npmjs.com/package/dotenv) is a module to configure environment variables
 
 ```
@@ -117,13 +117,13 @@ $ npm install truffle-hdwallet-provider loom-truffle-provider dotenv --save-dev
 
 6. Copy your private key from the file previously generated (priv_key)
 
-7. Create a **.env** in the Truffle project and copy the private key like this
+7. Create a `.env` in the Truffle project and copy the private key like this
 
 ```
 PRIVATE_KEY="0kwCi...iWNNw=="
 ```
 
-8. Open the file **truffle.js** and add the following configuration
+8. Open the file `truffle.js` and add the following configuration
 
 ```
 require('dotenv').config();
@@ -183,13 +183,13 @@ $ cd frontend
 2. Install the necessary dependencies
 
   * [web3 (1.0.0-beta.34)](https://github.com/ethereum/web3.js/) This is the Ethereum compatible JavaScript API which implements the Generic JSON RPC spec
-  * [Loom-js](https://github.com/loomnetwork/loom-js) is a JavaScript library for building browser apps & NodeJS services that interact with Loom 
+  * [loom-js](https://github.com/loomnetwork/loom-js) is a JavaScript library for building browser apps & NodeJS services that interact with Loom 
 
 ```
 $ npm install web3@1.0.0-beta.34 loom-js --save
 ```
 
-3. Edit **frontend/package.json** and add the following line under the scripts section to access the Truffle contract artifacts from the webapp 
+3. Edit `frontend/package.json` and add the following line under the scripts section to access the Truffle contract artifacts from the webapp 
 
 ```
 "link-contracts": "run-script-os",
@@ -199,9 +199,10 @@ $ npm install web3@1.0.0-beta.34 loom-js --save
 
 *The full code of this file is available here: [package.json](https://github.com/gjeanmart/kauri-content/blob/master/loom_tutorial/frontend/package.json)*
 
-4. Open an edit **frontend/src/App.js**
+4. Open an edit `frontend/src/App.js`
 
   * Imports
+
 ```
 import Web3 from 'web3'
 import { Client, LocalAddress, CryptoUtils, LoomProvider } from 'loom-js'
@@ -235,7 +236,7 @@ this.web3 = new Web3(this.web3Provider)
 ```
 
 
-* Use web3 to load the Truffle artefacts and interact with the smart contract
+* Use web3 to load the Truffle artefacts and interact with the smart contract deployed
 
 ```
 // Read the Truffle JSON artifact
@@ -265,16 +266,31 @@ $ npm start
 
 After copy-pasting our private key in the input field, the application is able to connect to the Loom extdev node to interact with the contract (read and increment the counter).
 
-|||image||
+![](https://imgur.com/a/GHId8y0)
 
+# Notes
 
-## Notes:
+**Key Management**: There is currently no wallet (such as Metamask) with Loom network, the enduser has to handle the private key manually (browser storage) and the dAppChain provider must most likely provide a way to recover a private key.
 
-Key Management
+You can generate and manipulate a private key using loom-js like this:
+
+```
+// Generate a private key
+const privateKey = CryptoUtils.generatePrivateKey(); 
+
+// Retrieve the public key
+const publicKey = CryptoUtils.publicKeyFromPrivateKey(privateKey); 
+
+// Convert public key to address
+const address = LocalAddress.fromPublicKey(publicKey).toString(); 
+```
+
+**karma** : is a ERC20 token, sybil resistant, that can be used to prevent spam attack via a reputation-based transaction limiting system.
 
 ##  Links and resources
 **extdev**
 * Network ID: extdev-plasma-us1
 * Faucet: https://faucet.dappchains.com/
 * Documentation: https://loomx.io/developers/docs/en/phaser-sdk-demo-websocket.html
+
 
