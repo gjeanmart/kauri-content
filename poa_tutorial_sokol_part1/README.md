@@ -301,7 +301,9 @@ If Metamask is unlocked and connected to the Solok network, The web3 provider co
 
 * JSON-RPC Endpoint: https://sokol.poa.network
 
-* Block Explorers: https://blockscout.com/poa/sokol/ or https://sokol-explorer.poa.network/
+* Block Explorers: 
+  * https://blockscout.com/poa/sokol/
+  * https://sokol-explorer.poa.network/
 
 * Network Status: https://sokol-netstat.poa.network/
 
@@ -311,9 +313,13 @@ If Metamask is unlocked and connected to the Solok network, The web3 provider co
 
 * Network ID: 99
 
-* JSON-RPC Endpoint: https://core.poa.network or https://poa.infura.io/
+* JSON-RPC Endpoint: 
+  * https://core.poa.network
+  * https://poa.infura.io/
 
-* Block Explorers: https://blockscout.com/poa/core or https://core-explorer.poa.network/
+* Block Explorers: 
+  * https://blockscout.com/poa/core
+  * https://core-explorer.poa.network/
 
 * Network Status: https://core-netstat.poa.network/
 
