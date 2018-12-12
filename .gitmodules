@@ -1,0 +1,3 @@
+[submodule "poa_tutorial_sokol_part2/poa_tutorial_sokol_part2/bridge-contracts"]
+	path = poa_tutorial_sokol_part2/poa_tutorial_sokol_part2/bridge-contracts
+	url = git@github.com:poanetwork/poa-bridge-contracts.git
