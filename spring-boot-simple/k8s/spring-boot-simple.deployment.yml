@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-simple
+  labels:
+    app: spring-boot-simple
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-simple
+  template:
+    metadata:
+      labels:
+        app: spring-boot-simple
+    spec:
+      containers:
+      - image: gjeanmart/spring-boot-simple:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        name: spring-boot-simple
+        env:
+          - name: SPRING_DATA_MONGODB_HOST
+            value: mongodb
+        ports:
+        - containerPort: 8080
