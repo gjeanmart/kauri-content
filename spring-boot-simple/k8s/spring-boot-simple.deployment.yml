@@ -20,6 +20,6 @@ spec:
         name: spring-boot-simple
         env:
           - name: SPRING_DATA_MONGODB_HOST
-            value: mongodb
+            value: mongo
         ports:
         - containerPort: 8080

@@ -1,28 +1,31 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1beta1
+kind: StatefulSet
 metadata:
-  name: mongodb
-  labels:
-    appdb: mongodb
+  name: mongo
 spec:
+  serviceName: "mongo"
   replicas: 1
-  selector:
-    matchLabels:
-      appdb: mongodb
   template:
     metadata:
       labels:
-        appdb: mongodb
+        app: mongo
     spec:
       containers:
-      - name: mongodb
-        image: mongo:3.6.6
+      - name: mongo
+        image: mongo
         ports:
         - containerPort: 27017
         volumeMounts:
-        - name: hostvol
+        - name: mongo-persistent-storage
           mountPath: /data/db
-      volumes:
-      - name: hostvol
-        persistentVolumeClaim:
-          claimName: mongo-pv-claim
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "standard"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
