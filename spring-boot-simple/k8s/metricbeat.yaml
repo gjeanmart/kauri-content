@@ -90,7 +90,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: metricbeat
-        image: docker.elastic.co/beats/metricbeat:6.3.2
+        image: docker.elastic.co/beats/metricbeat:7.2.0
         args: [
           "-c", "/etc/metricbeat.yml",
           "-e",
@@ -98,13 +98,13 @@ spec:
         ]
         env:
         - name: ELASTICSEARCH_HOST
-          value: elasticsearch
+          value: elasticsearch.default.svc.cluster.local
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
-          value: elastic
+          value:
         - name: ELASTICSEARCH_PASSWORD
-          value: changeme
+          value:
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
@@ -200,20 +200,20 @@ spec:
       serviceAccountName: metricbeat
       containers:
       - name: metricbeat
-        image: docker.elastic.co/beats/metricbeat:6.3.2
+        image: docker.elastic.co/beats/metricbeat:7.2.0
         args: [
           "-c", "/etc/metricbeat.yml",
           "-e",
         ]
         env:
         - name: ELASTICSEARCH_HOST
-          value: elasticsearch
+          value: elasticsearch.default.svc.cluster.local
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
-          value: elastic
+          value:
         - name: ELASTICSEARCH_PASSWORD
-          value: changeme
+          value:
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
