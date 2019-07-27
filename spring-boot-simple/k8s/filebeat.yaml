@@ -40,6 +40,10 @@ data:
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
       setup.dashboards.enabled: true
+
+    setup.kibana:
+      hosts: "kibana".default.svc.cluster.local:5601"
+
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
