@@ -42,7 +42,7 @@ data:
       setup.dashboards.enabled: true
 
     setup.kibana:
-      hosts: "kibana".default.svc.cluster.local:5601"
+      hosts: "kibana.default.svc.cluster.local:5601"
 
 ---
 apiVersion: extensions/v1beta1
