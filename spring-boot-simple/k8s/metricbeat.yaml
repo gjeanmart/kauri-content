@@ -29,6 +29,7 @@ data:
 
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      setup.dashboards.enabled: true
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -195,6 +196,7 @@ data:
 
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      setup.dashboards.enabled: true
 ---
 apiVersion: v1
 kind: ConfigMap

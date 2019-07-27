@@ -39,6 +39,7 @@ data:
 
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      setup.dashboards.enabled: true
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -70,7 +71,7 @@ spec:
         - name: ELASTICSEARCH_USERNAME
           value:
         - name: ELASTICSEARCH_PASSWORD
-          value: 
+          value:
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
