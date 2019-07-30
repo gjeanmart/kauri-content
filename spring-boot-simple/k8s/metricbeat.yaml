@@ -30,10 +30,10 @@ data:
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
 
-    setup.dashboards.enabled: true
-
     setup.kibana:
-      hosts: "kibana.default.svc.cluster.local:5601"
+      host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
+
+    setup.dashboards.enabled: true
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -122,6 +122,14 @@ spec:
           value:
         - name: ELASTICSEARCH_PASSWORD
           value:
+        - name: KIBANA_HOST
+          value: kibana.default.svc.cluster.local
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: KIBANA_USERNAME
+          value:
+        - name: KIBANA_PASSWORD
+          value:
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
@@ -201,10 +209,10 @@ data:
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
 
-    setup.dashboards.enabled: true
-
     setup.kibana:
-      hosts: "kibana.default.svc.cluster.local:5601"
+      host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
+
+    setup.dashboards.enabled: true
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -261,6 +269,14 @@ spec:
         - name: ELASTICSEARCH_USERNAME
           value:
         - name: ELASTICSEARCH_PASSWORD
+          value:
+        - name: KIBANA_HOST
+          value: kibana.default.svc.cluster.local
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: KIBANA_USERNAME
+          value:
+        - name: KIBANA_PASSWORD
           value:
         - name: ELASTIC_CLOUD_ID
           value:
