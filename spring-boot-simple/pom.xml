@@ -11,6 +11,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<docker.image.prefix>gjeanmart</docker.image.prefix>
 		<dockerfile-maven-version>1.4.10</dockerfile-maven-version>
+		<elastic-apm.version>1.7.0</elastic-apm.version>
 		<package-name>spring-boot-simple</package-name>
 	</properties>
 
@@ -34,6 +35,11 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>co.elastic.apm</groupId>
+			<artifactId>apm-agent-api</artifactId>
+			<version>${elastic-apm.version}</version>
 		</dependency>
 	</dependencies>
 

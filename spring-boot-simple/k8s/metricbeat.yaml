@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: monitoring
   name: metricbeat-daemonset-config
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 data:
   metricbeat.yml: |-
     metricbeat.config.modules:
@@ -38,10 +38,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: monitoring
   name: metricbeat-daemonset-modules
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 data:
   system.yml: |-
     - module: system
@@ -91,15 +91,15 @@ data:
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
+  namespace: monitoring
   name: metricbeat
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 spec:
   template:
     metadata:
       labels:
-        k8s-app: metricbeat
+        app: metricbeat
     spec:
       serviceAccountName: metricbeat
       terminationGracePeriodSeconds: 30
@@ -188,10 +188,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: monitoring
   name: metricbeat-deployment-config
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 data:
   metricbeat.yml: |-
     metricbeat.config.modules:
@@ -217,10 +217,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: monitoring
   name: metricbeat-deployment-modules
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 data:
   # This module requires `kube-state-metrics` up and running under `kube-system` namespace
   kubernetes.yml: |-
@@ -235,7 +235,7 @@ data:
         #- event
       period: 10s
       host: ${NODE_NAME}
-      hosts: ["kube-state-metrics:8080"]
+      hosts: ["kube-state-metrics.default.svc.cluster.local:8080"]
     - module: mongodb
       hosts: ["mongo.default.svc.cluster.local:27017"]
 ---
@@ -243,15 +243,15 @@ data:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  namespace: monitoring
   name: metricbeat
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 spec:
   template:
     metadata:
       labels:
-        k8s-app: metricbeat
+        app: metricbeat
     spec:
       serviceAccountName: metricbeat
       hostNetwork: true
@@ -321,7 +321,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: metricbeat
-  namespace: kube-system
+  namespace: monitoring
 roleRef:
   kind: ClusterRole
   name: metricbeat
@@ -332,7 +332,7 @@ kind: ClusterRole
 metadata:
   name: metricbeat
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 rules:
 - apiGroups: [""]
   resources:
@@ -360,8 +360,8 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  namespace: monitoring
   name: metricbeat
-  namespace: kube-system
   labels:
-    k8s-app: metricbeat
+    app: metricbeat
 ---
