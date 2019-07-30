@@ -31,10 +31,11 @@ metadata:
   labels:
     app: apm-server
 spec:
-  type: NodePort
   ports:
   - port: 8200
-    name: apm-port
+    name: apm-server
+  selector:
+    app: apm-server
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -76,7 +77,7 @@ spec:
         - name: NODE_NAME
         ports:
         - containerPort: 8200
-          name: apm-port
+          name: apm-server
         volumeMounts:
         - name: config
           mountPath: /usr/share/apm-server/apm-server.yml
