@@ -22,6 +22,6 @@ spec:
           - name: SPRING_DATA_MONGODB_HOST
             value: mongo
           - name: ELASTIC_APM_SERVER
-            value: apm-server
+            value: http://apm-server:8200
         ports:
         - containerPort: 8080
