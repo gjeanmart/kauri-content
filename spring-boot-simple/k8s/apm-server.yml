@@ -24,16 +24,26 @@ data:
     setup.kibana:
       host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
 ---
-apiVersion: extensions/v1beta1
-kind: DaemonSet
+apiVersion: v1
+kind: Service
 metadata:
   name: apm-server
   labels:
     app: apm-server
 spec:
+  type: NodePort
+  ports:
+  - port: 8200
+    name: apm-port
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: apm-server
+spec:
   # this replicas value is default
   # modify it according to your case
-  #replicas: 1
+  replicas: 1
   template:
     metadata:
       labels:
@@ -68,11 +78,11 @@ spec:
         - containerPort: 8200
           name: apm-port
         volumeMounts:
-        - name: apm-server
+        - name: apm-server-config
           mountPath: /usr/share/apm-server/apm-server.yml
           readOnly: true
           subPath: apm-server.yml
       volumes:
-      - name: apm-server
+      - name: apm-server-config
         configMap:
-          name: apm-server
+          name: apm-server-config
