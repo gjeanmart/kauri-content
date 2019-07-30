@@ -235,7 +235,7 @@ data:
         #- event
       period: 10s
       host: ${NODE_NAME}
-      hosts: ["kube-state-metrics.default.svc.cluster.local:8080"]
+      hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
     - module: mongodb
       hosts: ["mongo.default.svc.cluster.local:27017"]
 ---
