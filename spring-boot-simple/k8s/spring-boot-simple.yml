@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: default
-  name: spring-boot-simple-service
+  name: spring-boot-simple
   labels:
     app: spring-boot-simple
 spec:
