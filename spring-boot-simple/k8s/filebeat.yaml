@@ -41,7 +41,7 @@ data:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
 
     setup.kibana:
-      hosts: ['${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}']
+      host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
 
     setup.dashboards.enabled: true
 
