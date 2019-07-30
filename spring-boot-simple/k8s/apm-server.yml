@@ -44,28 +44,28 @@ spec:
       containers:
       - name: apm-server
         image: docker.elastic.co/apm/apm-server:7.2.0
-      env:
-      - name: ELASTICSEARCH_HOST
-        value: elasticsearch.default.svc.cluster.local
-      - name: ELASTICSEARCH_PORT
-        value: "9200"
-      - name: ELASTICSEARCH_USERNAME
-        value:
-      - name: ELASTICSEARCH_PASSWORD
-        value:
-      - name: KIBANA_HOST
-        value: kibana.default.svc.cluster.local
-      - name: KIBANA_PORT
-        value: "5601"
-      - name: KIBANA_USERNAME
-        value:
-      - name: KIBANA_PASSWORD
-        value:
-      - name: ELASTIC_CLOUD_ID
-        value:
-      - name: ELASTIC_CLOUD_AUTH
-        value:
-      - name: NODE_NAME
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: elasticsearch.default.svc.cluster.local
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ELASTICSEARCH_USERNAME
+          value:
+        - name: ELASTICSEARCH_PASSWORD
+          value:
+        - name: KIBANA_HOST
+          value: kibana.default.svc.cluster.local
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: KIBANA_USERNAME
+          value:
+        - name: KIBANA_PASSWORD
+          value:
+        - name: ELASTIC_CLOUD_ID
+          value:
+        - name: ELASTIC_CLOUD_AUTH
+          value:
+        - name: NODE_NAME
         valueFrom:
           fieldRef:
             fieldPath: spec.nodeName
