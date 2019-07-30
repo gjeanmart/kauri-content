@@ -85,5 +85,4 @@ spec:
       volumes:
       - name: config
         configMap:
-          defaultMode: 0600
           name: apm-server-config
