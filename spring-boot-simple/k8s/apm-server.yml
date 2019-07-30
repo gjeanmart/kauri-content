@@ -23,8 +23,6 @@ data:
 
     setup.kibana:
       host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
-
-    setup.dashboards.enabled: true
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
