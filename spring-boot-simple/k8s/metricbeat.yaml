@@ -236,6 +236,8 @@ data:
       period: 10s
       host: ${NODE_NAME}
       hosts: ["kube-state-metrics:8080"]
+    - module: mongodb
+      hosts: ["mongo.default.svc.cluster.local:27017"]
 ---
 # Deploy singleton instance in the whole cluster for some unique data sources, like kube-state-metrics
 apiVersion: apps/v1beta1
