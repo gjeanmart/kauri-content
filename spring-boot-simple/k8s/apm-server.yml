@@ -2,10 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: apm-server-config
-  namespace: logging
+  name: apm-server
   labels:
-    k8s-app: apm-server
+    app: apm-server
 data:
   apm-server.yml: |-
     apm-server:
@@ -31,9 +30,8 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: apm-server
-  namespace: logging
   labels:
-    k8s-app: apm-server
+    app: apm-server
 spec:
   # this replicas value is default
   # modify it according to your case
@@ -75,11 +73,11 @@ spec:
         - containerPort: 8200
           name: apm-port
         volumeMounts:
-        - name: apm-server-config
+        - name: apm-server
           mountPath: /usr/share/apm-server/apm-server.yml
           readOnly: true
           subPath: apm-server.yml
       volumes:
-      - name: apm-server-config
+      - name: apm-server
         configMap:
-          name: apm-server-config
+          name: apm-server
