@@ -115,7 +115,7 @@ spec:
         ]
         env:
         - name: ELASTICSEARCH_HOST
-          value: elasticsearch.default.svc.cluster.local
+          value: elasticsearch.monitoring.svc.cluster.local
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
@@ -123,7 +123,7 @@ spec:
         - name: ELASTICSEARCH_PASSWORD
           value:
         - name: KIBANA_HOST
-          value: kibana.default.svc.cluster.local
+          value: kibana.monitoring.svc.cluster.local
         - name: KIBANA_PORT
           value: "5601"
         - name: KIBANA_USERNAME
@@ -265,7 +265,7 @@ spec:
         ]
         env:
         - name: ELASTICSEARCH_HOST
-          value: elasticsearch.default.svc.cluster.local
+          value: elasticsearch.monitoring.svc.cluster.local
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
@@ -273,7 +273,7 @@ spec:
         - name: ELASTICSEARCH_PASSWORD
           value:
         - name: KIBANA_HOST
-          value: kibana.default.svc.cluster.local
+          value: kibana.monitoring.svc.cluster.local
         - name: KIBANA_PORT
           value: "5601"
         - name: KIBANA_USERNAME
