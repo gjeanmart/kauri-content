@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.kauri.tutorials.java-ethereum</groupId>
+  <artifactId>java-erc20</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <web3j.version>4.2.0</web3j.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.web3j</groupId>
+      <artifactId>core</artifactId>
+      <version>${web3j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.web3j</groupId>
+      <artifactId>contracts</artifactId>
+      <version>${web3j.version}</version>
+    </dependency>
+  </dependencies>
+</project>
