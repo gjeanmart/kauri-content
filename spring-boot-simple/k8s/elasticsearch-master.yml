@@ -69,7 +69,7 @@ spec:
         - name: NODE_NAME
           value: elasticsearch-master
         - name: NODE_LIST
-          value: elasticsearch-data,elasticsearch-client
+          value: elasticsearch-master,elasticsearch-data,elasticsearch-client
         - name: MASTER_NODES
           value: elasticsearch-master
         - name: "ES_JAVA_OPTS"
