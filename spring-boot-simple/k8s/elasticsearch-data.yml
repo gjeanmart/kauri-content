@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: monitoring
+  name: elasticsearch-data-config
+  labels:
+    app: elasticsearch
+    role: data
+data:
+  elasticsearch.yml: |-
+    node:
+      master: false
+      data: true
+      ingest: false
+
+    xpack.security.enabled: true
+    xpack.security.authc.realms:
+      native.realm1:
+        order: 0
+        cache.ttl: 60m
+
+    xpack.monitoring.collection.enabled: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: elasticsearch-data
+  labels:
+    app: elasticsearch
+    role: data
+spec:
+  ports:
+  - port: 9300
+    name: transport
+  selector:
+    app: elasticsearch
+    role: data
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  namespace: monitoring
+  name: elasticsearch-data
+  labels:
+    app: elasticsearch
+    role: data
+spec:
+  serviceName: "elasticsearch-data"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elasticsearch-data
+        role: data
+    spec:
+      containers:
+      - name: elasticsearch-data
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+        env:
+        - name: network.host
+          value: 0.0.0.0
+        - name: cluster.name
+          value: elasticsearch
+        - name: node.name
+          value: elasticsearch-data
+        - name: discovery.seed_hosts
+          value: elasticsearch-master,elasticsearch-client
+        - name: cluster.initial_master_nodes
+          value: elasticsearch-master
+        - name: "ES_JAVA_OPTS"
+          value: "-Xms1024m -Xmx1024m"
+        ports:
+        - containerPort: 9300
+          name: transport
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          readOnly: true
+          subPath: elasticsearch.yml
+        - name: elasticsearch-data-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: config
+        configMap:
+          name: elasticsearch-data-config
+  volumeClaimTemplates:
+  - metadata:
+      name: elasticsearch-data-persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "standard"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 50Gi
+---

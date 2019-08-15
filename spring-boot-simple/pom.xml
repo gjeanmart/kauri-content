@@ -11,7 +11,8 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<docker.image.prefix>gjeanmart</docker.image.prefix>
 		<dockerfile-maven-version>1.4.10</dockerfile-maven-version>
-		<elastic-apm.version>1.7.0</elastic-apm.version>
+		<elastic-apm.version>1.8.0</elastic-apm.version>
+		<opentracing-spring-cloud.version>0.3.1</opentracing-spring-cloud.version>
 		<package-name>spring-boot-simple</package-name>
 	</properties>
 
@@ -36,10 +37,40 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>co.elastic.apm</groupId> -->
+		<!-- <artifactId>apm-agent-api</artifactId> -->
+		<!-- <version>${elastic-apm.version}</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>co.elastic.apm</groupId>
-			<artifactId>apm-agent-api</artifactId>
+			<artifactId>apm-opentracing</artifactId>
 			<version>${elastic-apm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.opentracing</groupId>
+			<artifactId>opentracing-api</artifactId>
+			<version>0.32.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.opentracing</groupId>
+			<artifactId>opentracing-util</artifactId>
+			<version>0.32.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.opentracing.contrib</groupId>
+			<artifactId>opentracing-spring-web-autoconfigure</artifactId>
+			<version>${opentracing-spring-cloud.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.opentracing.contrib</groupId>
+			<artifactId>opentracing-spring-cloud-mongo-starter</artifactId>
+			<version>${opentracing-spring-cloud.version}</version>
 		</dependency>
 	</dependencies>
 
