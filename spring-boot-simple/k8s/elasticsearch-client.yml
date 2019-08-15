@@ -9,17 +9,19 @@ metadata:
     role: client
 data:
   elasticsearch.yml: |-
+    cluster.name: ${CLUSTER_NAME}
+    node.name: ${NODE_NAME}
+    discovery.seed_hosts: ${NODE_LIST}
+    cluster.initial_master_nodes: ${MASTER_NODES}
+
+    network.host: 0.0.0.0
+
     node:
       master: false
       data: false
       ingest: true
 
     xpack.security.enabled: true
-    xpack.security.authc.realms:
-      native.realm1:
-        order: 0
-        cache.ttl: 60m
-
     xpack.monitoring.collection.enabled: true
 ---
 apiVersion: v1
@@ -64,15 +66,13 @@ spec:
       - name: elasticsearch-client
         image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
         env:
-        - name: network.host
-          value: 0.0.0.0
-        - name: cluster.name
+        - name: CLUSTER_NAME
           value: elasticsearch
-        - name: node.name
+        - name: NODE_NAME
           value: elasticsearch-client
-        - name: discovery.seed_hosts
-          value: elasticsearch-data,elasticsearch-master
-        - name: cluster.initial_master_nodes
+        - name: NODE_LIST
+          value: elasticsearch-master,elasticsearch-data,elasticsearch-client
+        - name: MASTER_NODES
           value: elasticsearch-master
         - name: "ES_JAVA_OPTS"
           value: "-Xms256m -Xmx256m"
