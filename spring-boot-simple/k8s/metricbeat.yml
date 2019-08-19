@@ -21,6 +21,7 @@ data:
                 kubernetes.labels.app: redis
               config:
                 - module: redis
+                  enabled: false
                   metricsets: ["info", "keyspace"]
                   period: 1m
                   hosts: ["${data.host}:6379"]
@@ -29,6 +30,7 @@ data:
                 kubernetes.labels.app: nginx-ingress
               config:
                 - module: nginx
+                  enabled: false
                   metricsets: ["stubstatus"]
                   period: 1m
                   hosts: ["nginx-dev-nginx-ingress-controller-stats.dev:18080"]
@@ -44,6 +46,7 @@ data:
                 kubernetes.labels.app: kafka
               config:
                 - module: kafka
+                  enabled: false
                   metricsets: ["consumergroup", "partition"]
                   period: 1m
                   hosts: ["${data.host}:9092"]
@@ -51,7 +54,6 @@ data:
                 kubernetes.labels.app: zookeeper
               config:
                 - module: zookeeper
-                # exception in ES: failed to parse field [zookeeper.server.version_date] of type [date] in document with id 'UL5zUmwBzu-J64SMhPug'. Preview of field's value: '03/23/2017 10:13 GMT'"
                   enabled: false
                   metricsets: ["mntr", "server"]
                   period: 1m
@@ -113,9 +115,9 @@ data:
         - network
         - process
         - process_summary
-        #- core
-        #- diskio
-        #- socket
+        - core
+        - diskio
+        - socket
       processes: ['.*']
       process.include_top_n:
         by_cpu: 5      # include top 5 processes by CPU
@@ -209,6 +211,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: PERIOD
+          value: "10s"
         securityContext:
           runAsUser: 0
         resources:
