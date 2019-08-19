@@ -23,7 +23,7 @@ data:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["mongo.default.svc.cluster.local:27017"]
+                  hosts: ["${data.host}:27017"]
 
             - condition.equals:
                 kubernetes.labels.app: redis
