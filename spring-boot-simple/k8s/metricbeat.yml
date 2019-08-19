@@ -42,7 +42,7 @@ data:
                   enabled: false
                   metricsets: ["stubstatus"]
                   period: ${PERIOD}
-                  hosts: ["nginx-dev-nginx-ingress-controller-stats.dev:18080"]
+                  hosts: ["nginx-nginx-ingress-controller-stats:18080"]
                   server_status_path: "nginx_status"
 
             - condition.equals:
