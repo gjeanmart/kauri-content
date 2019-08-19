@@ -1,0 +1,272 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: monitoring
+  name: filebeat-config
+  labels:
+    app: filebeat
+data:
+  filebeat.yml: |-
+    setup.dashboards.enabled: true
+    setup.template.enabled: true
+
+    setup.template.settings:
+      index.number_of_shards: 1
+
+    setup.ilm:
+      policy_file: /etc/indice-lifecycle.json
+
+    filebeat.inputs:
+    - type: container
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    filebeat.modules:
+      - module: system
+        syslog:
+          enabled: true
+        auth:
+          enabled: true
+
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          templates:
+
+            - condition.equals:
+                kubernetes.labels.role: mongo
+              config:
+                - module: mongodb
+                  enabled: true
+                  log:
+                    input:
+                      type: docker
+                      containers.ids:
+                        - ${data.kubernetes.container.id}
+
+            - condition.contains:
+                kubernetes.labels.app: redis
+              config:
+                - module: redis
+                  enabled: false
+                  log:
+                    input:
+                      type: docker
+                      containers.ids:
+                        - ${data.kubernetes.container.id}
+                  slowlog:
+                    var.hosts: ["${data.host}:${data.port}"]
+                    var.password: 8YLQaUSNUX
+
+            - condition.equals:
+                kubernetes.labels.app: kafka
+              config:
+                - module: kafka
+                  enabled: false
+                  log:
+                    input:
+                      type: docker
+                      containers.ids:
+                        - ${data.kubernetes.container.id}
+
+            - condition.equals:
+                kubernetes.labels.app: nginx-ingress
+              config:
+                - module: nginx
+                  enabled: false
+                  access:
+                    input:
+                      type: docker
+                      containers.ids:
+                        - ${data.kubernetes.container.id}
+                  error:
+                    input:
+                      type: docker
+                      containers.ids:
+                        - ${data.kubernetes.container.id}
+    processors:
+      - drop_event:
+          when.or:
+              - and:
+                  - regexp:
+                      message: '^\d+\.\d+\.\d+\.\d+ '
+                  - equals:
+                      fileset.name: error
+              - and:
+                  - not:
+                      regexp:
+                          message: '^\d+\.\d+\.\d+\.\d+ '
+                  - equals:
+                      fileset.name: access
+      - add_cloud_metadata:
+      - add_kubernetes_metadata:
+      - add_docker_metadata:
+
+    output.elasticsearch:
+      hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
+
+    setup.kibana:
+      host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
+      path: ${KIBANA_PATH}
+
+  indice-lifecycle.json: |-
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "actions": {
+              "rollover": {
+                "max_size": "5GB" ,
+                "max_age": "1d"
+              }
+            }
+          },
+          "delete": {
+            "min_age": "7d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  namespace: monitoring
+  name: filebeat
+  labels:
+    app: filebeat
+spec:
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: filebeat
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:7.3.0
+        args: [
+          "-c", "/etc/filebeat.yml",
+          "-e",
+        ]
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: elasticsearch-client.monitoring.svc.cluster.local
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ELASTICSEARCH_USERNAME
+          value: elastic
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-pw-elastic
+              key: password
+        - name: KIBANA_HOST
+          value: kibana.monitoring.svc.cluster.local
+        - name: KIBANA_PORT
+          value: "5601"
+        - name: KIBANA_PATH
+          value: /monitoring
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          runAsUser: 0
+          # If using Red Hat OpenShift uncomment this:
+          #privileged: true
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/filebeat.yml
+          readOnly: true
+          subPath: filebeat.yml
+        - name: config
+          mountPath: /etc/indice-lifecycle.json
+          readOnly: true
+          subPath: indice-lifecycle.json
+        - name: data
+          mountPath: /usr/share/filebeat/data
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: dockersock
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0600
+          name: filebeat-config
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: data
+        emptyDir: {}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  namespace: monitoring
+  name: filebeat
+subjects:
+- kind: ServiceAccount
+  name: filebeat
+  namespace: monitoring
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  namespace: monitoring
+  name: filebeat
+  labels:
+    app: filebeat
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources:
+  - namespaces
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: monitoring
+  name: filebeat
+  labels:
+    app: filebeat
+---
