@@ -39,7 +39,7 @@ spec:
           - name: SPRING_DATA_MONGODB_HOST
             value: mongo
           - name: ELASTIC_APM_ACTIVE
-            value: false
+            value: "false"
           - name: ELASTIC_APM_SERVER
             value: http://apm-server.monitoring.svc.cluster.local:8200
         ports:
