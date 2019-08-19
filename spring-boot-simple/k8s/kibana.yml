@@ -72,4 +72,4 @@ spec:
       - name: config
         configMap:
           name: kibana-config
----
+---s
