@@ -18,45 +18,49 @@ data:
           host: ${HOSTNAME}
           templates:
             - condition.equals:
+                kubernetes.labels.role: mongo
+              config:
+                - module: mongodb
+                  metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
+                  period: ${PERIOD}
+                  hosts: ["mongo:27017"]
+
+            - condition.equals:
                 kubernetes.labels.app: redis
               config:
                 - module: redis
                   enabled: false
                   metricsets: ["info", "keyspace"]
-                  period: 1m
+                  period: ${PERIOD}
                   hosts: ["${data.host}:6379"]
-                  password: 8YLQaUSNUX
+                  password: "s3cret"
+
             - condition.equals:
                 kubernetes.labels.app: nginx-ingress
               config:
                 - module: nginx
                   enabled: false
                   metricsets: ["stubstatus"]
-                  period: 1m
+                  period: ${PERIOD}
                   hosts: ["nginx-dev-nginx-ingress-controller-stats.dev:18080"]
                   server_status_path: "nginx_status"
-            - condition.equals:
-                kubernetes.labels.role: mongo
-              config:
-                - module: mongodb
-                  metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
-                  period: 1m
-                  hosts: ["mongo.dev:27017"]
+
             - condition.equals:
                 kubernetes.labels.app: kafka
               config:
                 - module: kafka
                   enabled: false
                   metricsets: ["consumergroup", "partition"]
-                  period: 1m
+                  period: ${PERIOD}
                   hosts: ["${data.host}:9092"]
+
             - condition.equals:
                 kubernetes.labels.app: zookeeper
               config:
                 - module: zookeeper
                   enabled: false
                   metricsets: ["mntr", "server"]
-                  period: 1m
+                  period: ${PERIOD}
                   hosts: ["${data.host}:2181"]
 
     processors:
@@ -107,7 +111,7 @@ metadata:
 data:
   system.yml: |-
     - module: system
-      period: 1m
+      period: ${PERIOD}
       metricsets:
         - cpu
         - load
@@ -123,7 +127,7 @@ data:
         by_cpu: 5      # include top 5 processes by CPU
         by_memory: 5   # include top 5 processes by memory
     - module: system
-      period: 1m
+      period: ${PERIOD}
       metricsets:
         - filesystem
         - fsstat
@@ -141,7 +145,7 @@ data:
         - memory
         - network
       hosts: ["unix:///var/run/docker.sock"]
-      period: 1m
+      period: ${PERIOD}
 
     - module: kubernetes
       metricsets:
@@ -150,7 +154,7 @@ data:
         - pod
         - container
         - volume
-      period: 1m
+      period: ${PERIOD}
       host: ${NODE_NAME}
       hosts: ["localhost:10255"]
 
@@ -161,7 +165,7 @@ data:
         - state_replicaset
         - state_pod
         - state_container
-      period: 1m
+      period: ${PERIOD}
       host: ${NODE_NAME}
       hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
 ---
