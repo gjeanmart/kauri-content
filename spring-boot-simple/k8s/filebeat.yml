@@ -42,7 +42,7 @@ data:
           templates:
 
             - condition.equals:
-                kubernetes.labels.role: mongo
+                kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   enabled: true
