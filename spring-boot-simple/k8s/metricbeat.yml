@@ -193,7 +193,7 @@ spec:
             cpu: 100m
             memory: 100Mi
         volumeMounts:
-        - name: config-system
+        - name: config-main
           mountPath: /etc/metricbeat.yml
           readOnly: true
           subPath: metricbeat.yml
