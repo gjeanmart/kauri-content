@@ -8,7 +8,6 @@ metadata:
     app: filebeat
 data:
   filebeat.yml: |-
-
     filebeat.inputs:
     - type: container
       paths:
