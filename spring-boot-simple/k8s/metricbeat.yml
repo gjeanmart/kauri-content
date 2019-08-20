@@ -17,13 +17,12 @@ data:
         - type: kubernetes
           templates:
             - condition.equals:
-                kubernetes.namespace: default
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["${data.host}:27017"]
+                  hosts: ["mongo.default:27017"]
 
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
