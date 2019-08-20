@@ -18,12 +18,13 @@ data:
           host: ${HOSTNAME}
           include_labels: ["app"]
           templates:
+
             - condition.equals:
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
-                  period: ${PERIOD}
+                  #period: ${PERIOD}
                   hosts: "mongo.default:27017"
 
     processors:
@@ -41,8 +42,6 @@ data:
 
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
-
-    logging.level: info
 ---
 apiVersion: v1
 kind: ConfigMap
