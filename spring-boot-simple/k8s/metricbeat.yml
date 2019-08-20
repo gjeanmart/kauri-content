@@ -18,7 +18,7 @@ data:
           host: ${HOSTNAME}
           templates:
             - condition.equals:
-                kubernetes.labels.app: mongo
+                kubernetes.pod.name: mongo-0
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
