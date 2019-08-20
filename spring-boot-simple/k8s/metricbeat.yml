@@ -23,7 +23,7 @@ data:
                   enabled: true
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["${data.host}:27017"]
+                  hosts: ["mongo.default:27017"]
 
     processors:
       - add_cloud_metadata:
