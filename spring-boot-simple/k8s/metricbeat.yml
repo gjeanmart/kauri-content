@@ -24,6 +24,10 @@ data:
                   period: ${PERIOD}
                   hosts: ["mongo.default:27017"]
 
+
+    processors:
+      - add_cloud_metadata:
+
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
       username: ${ELASTICSEARCH_USERNAME}
