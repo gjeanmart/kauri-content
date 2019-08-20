@@ -8,10 +8,8 @@ metadata:
     app: metricbeat
 data:
   metricbeat.yml: |-
-    metricbeat.config.modules:
-      path: ${path.config}/modules.d/*.yml
-      reload.enabled: false
 
+    # Configure modules
     metricbeat.modules:
       - module: system
         period: ${PERIOD}
@@ -40,6 +38,8 @@ data:
             system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
 
       - module: docker
+        period: ${PERIOD}
+        hosts: ["unix:///var/run/docker.sock"]
         metricsets:
           - container
           - cpu
@@ -48,31 +48,30 @@ data:
           - info
           - memory
           - network
-        hosts: ["unix:///var/run/docker.sock"]
-        period: ${PERIOD}
 
       - module: kubernetes
+        period: ${PERIOD}
+        host: ${NODE_NAME}
+        hosts: ["localhost:10255"]
         metricsets:
           - node
           - system
           - pod
           - container
           - volume
-        period: ${PERIOD}
-        host: ${NODE_NAME}
-        hosts: ["localhost:10255"]
 
       - module: kubernetes
+        period: ${PERIOD}
+        host: ${NODE_NAME}
         metricsets:
           - state_node
           - state_deployment
           - state_replicaset
           - state_pod
           - state_container
-        period: ${PERIOD}
-        host: ${NODE_NAME}
         hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
 
+    # Configure specific service module based on k8s deployment
     metricbeat.autodiscover:
       providers:
         - type: kubernetes
@@ -82,23 +81,27 @@ data:
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
-                  metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
                   hosts: ["mongo.default:27017"]
+                  metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
 
     processors:
       - add_cloud_metadata:
 
+    # Connection to ElasticSearch
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
       username: ${ELASTICSEARCH_USERNAME}
       password: ${ELASTICSEARCH_PASSWORD}
 
+    # Connection to Kibana to import pre-existing dashboards
     setup.kibana:
       host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
 
+    # Import pre-existing dashboards
     setup.dashboards.enabled: true
 
+    # Configure indice lifecycle
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
 ---
