@@ -76,7 +76,7 @@ data:
     metricbeat.autodiscover:
       providers:
         - type: kubernetes
-          host: ${HOSTNAME}
+          host: ${NODE_NAME}
           templates:
             - condition.equals:
                 kubernetes.labels.app: mongo
