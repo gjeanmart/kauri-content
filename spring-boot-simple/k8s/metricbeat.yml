@@ -16,9 +16,10 @@ data:
       providers:
         - type: kubernetes
           host: ${HOSTNAME}
+          include_labels: ["app"]
           templates:
             - condition.equals:
-                kubernetes.pod.name: mongo-0
+                kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
@@ -41,7 +42,7 @@ data:
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
 
-    logging.level: debug
+    logging.level: info
 ---
 apiVersion: v1
 kind: ConfigMap
