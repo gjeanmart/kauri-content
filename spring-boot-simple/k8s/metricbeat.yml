@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: monitoring
-  name: metricbeat-daemonset-config
+  name: metricbeat-daemonset-config-main
   labels:
     app: metricbeat
 data:
@@ -23,48 +23,7 @@ data:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["mongo.default.svc.cluster.local:27017"]
-
-            - condition.equals:
-                kubernetes.labels.app: redis
-              config:
-                - module: redis
-                  enabled: false
-                  metricsets: ["info", "keyspace"]
-                  period: ${PERIOD}
-                  hosts: ["${data.host}:6379"]
-                  password: "s3cret"
-
-            - condition.equals:
-                kubernetes.labels.app: nginx-ingress
-              config:
-                - module: nginx
-                  enabled: false
-                  metricsets: ["stubstatus"]
-                  period: ${PERIOD}
-                  hosts: ["nginx-nginx-ingress-controller-stats:18080"]
-                  server_status_path: "nginx_status"
-
-            - condition.equals:
-                kubernetes.labels.app: kafka
-              config:
-                - module: kafka
-                  enabled: false
-                  metricsets: ["consumergroup", "partition"]
-                  period: ${PERIOD}
-                  hosts: ["${data.host}:9092"]
-
-            - condition.equals:
-                kubernetes.labels.app: zookeeper
-              config:
-                - module: zookeeper
-                  enabled: false
-                  metricsets: ["mntr", "server"]
-                  period: ${PERIOD}
-                  hosts: ["${data.host}:2181"]
-
-    processors:
-      - add_cloud_metadata:
+                  hosts: ["${data.host}:27017"]
 
     output.elasticsearch:
       hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
@@ -78,34 +37,12 @@ data:
 
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
-
-  indice-lifecycle.json: |-
-    {
-      "policy": {
-        "phases": {
-          "hot": {
-            "actions": {
-              "rollover": {
-                "max_size": "5GB" ,
-                "max_age": "1d"
-              }
-            }
-          },
-          "delete": {
-            "min_age": "7d",
-            "actions": {
-              "delete": {}
-            }
-          }
-        }
-      }
-    }
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: monitoring
-  name: metricbeat-daemonset-modules
+  name: metricbeat-daemonset-config-modules
   labels:
     app: metricbeat
 data:
@@ -134,6 +71,7 @@ data:
       processors:
       - drop_event.when.regexp:
           system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
+
   kubernetes.yml: |-
     - module: docker
       metricsets:
@@ -169,7 +107,36 @@ data:
       host: ${NODE_NAME}
       hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
 ---
-# Deploy a Metricbeat instance per node for node metrics retrieval
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: monitoring
+  name: metricbeat-daemonset-config-indice
+  labels:
+    app: metricbeat
+data:
+  indice-lifecycle.json: |-
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "actions": {
+              "rollover": {
+                "max_size": "5GB" ,
+                "max_age": "1d"
+              }
+            }
+          },
+          "delete": {
+            "min_age": "7d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }
+---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -226,15 +193,15 @@ spec:
             cpu: 100m
             memory: 100Mi
         volumeMounts:
-        - name: config
+        - name: config-system
           mountPath: /etc/metricbeat.yml
           readOnly: true
           subPath: metricbeat.yml
-        - name: config
+        - name: config-indice
           mountPath: /etc/indice-lifecycle.json
           readOnly: true
           subPath: indice-lifecycle.json
-        - name: modules
+        - name: config-modules
           mountPath: /usr/share/metricbeat/modules.d
           readOnly: true
         - name: dockersock
@@ -255,14 +222,18 @@ spec:
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
-      - name: config
+      - name: config-main
         configMap:
           defaultMode: 0600
-          name: metricbeat-daemonset-config
-      - name: modules
+          name: metricbeat-daemonset-config-main
+      - name: config-modules
         configMap:
           defaultMode: 0600
-          name: metricbeat-daemonset-modules
+          name: metricbeat-daemonset-config-modules
+      - name: config-indice
+        configMap:
+          defaultMode: 0600
+          name: metricbeat-daemonset-config-indice
       - name: data
         hostPath:
           path: /var/lib/metricbeat-data
