@@ -10,7 +10,7 @@ data:
   metricbeat.yml: |-
     metricbeat.config.modules:
       path: ${path.config}/modules.d/*.yml
-      reload.enabled: false
+      reload.enabled: true
 
     metricbeat.autodiscover:
       providers:
@@ -20,10 +20,10 @@ data:
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
+                  enabled: true
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["mongo.default:27017"]
-
+                  hosts: ["${data.host}:27017"]
 
     processors:
       - add_cloud_metadata:
@@ -66,6 +66,7 @@ data:
       process.include_top_n:
         by_cpu: 5      # include top 5 processes by CPU
         by_memory: 5   # include top 5 processes by memory
+
     - module: system
       period: ${PERIOD}
       metricsets:
