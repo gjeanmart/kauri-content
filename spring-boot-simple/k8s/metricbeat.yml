@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: monitoring
-  name: metricbeat-daemonset-config-main
+  name: metricbeat-config
   labels:
     app: metricbeat
 data:
@@ -78,7 +78,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: monitoring
-  name: metricbeat-daemonset-config-indice
+  name: metricbeat-indice-lifecycle
   labels:
     app: metricbeat
 data:
@@ -189,11 +189,11 @@ spec:
       - name: config-main
         configMap:
           defaultMode: 0600
-          name: metricbeat-daemonset-config-main
+          name: metricbeat-config
       - name: config-indice
         configMap:
           defaultMode: 0600
-          name: metricbeat-daemonset-config-indice
+          name: metricbeat-indice-lifecycle
       - name: data
         hostPath:
           path: /var/lib/metricbeat-data
