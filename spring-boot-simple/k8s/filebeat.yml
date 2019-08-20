@@ -163,7 +163,7 @@ spec:
           mountPath: /etc/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
-        - name: config
+        - name: indice-lifecycle
           mountPath: /etc/indice-lifecycle.json
           readOnly: true
           subPath: indice-lifecycle.json
@@ -182,6 +182,10 @@ spec:
         configMap:
           defaultMode: 0600
           name: filebeat-config
+      - name: indice-lifecycle
+        configMap:
+          defaultMode: 0600
+          name: filebeat-indice-lifecycle
       - name: varlog
         hostPath:
           path: /var/log
