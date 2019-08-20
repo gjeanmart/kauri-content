@@ -74,7 +74,6 @@ data:
 
     setup.kibana:
       host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
-      path: ${KIBANA_PATH}
 
     setup.dashboards.enabled: true
 
