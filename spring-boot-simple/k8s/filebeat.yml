@@ -75,15 +75,14 @@ data:
 
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
-
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: monitoring
-  name: metricbeat-indice-lifecycle
+  name: filebeat-indice-lifecycle
   labels:
-    app: metricbeat
+    app: filebeat
 data:
   indice-lifecycle.json: |-
     {

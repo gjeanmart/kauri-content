@@ -160,11 +160,11 @@ spec:
             cpu: 100m
             memory: 100Mi
         volumeMounts:
-        - name: config-main
+        - name: config
           mountPath: /etc/metricbeat.yml
           readOnly: true
           subPath: metricbeat.yml
-        - name: config-indice
+        - name: indice-lifecycle
           mountPath: /etc/indice-lifecycle.json
           readOnly: true
           subPath: indice-lifecycle.json
@@ -186,11 +186,11 @@ spec:
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
-      - name: config-main
+      - name: config
         configMap:
           defaultMode: 0600
           name: metricbeat-config
-      - name: config-indice
+      - name: indice-lifecycle
         configMap:
           defaultMode: 0600
           name: metricbeat-indice-lifecycle
