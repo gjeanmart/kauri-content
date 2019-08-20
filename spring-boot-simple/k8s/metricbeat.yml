@@ -22,10 +22,9 @@ data:
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
-                  enabled: true
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["mongo.default:27017"]
+                  hosts: ["mongo.default.svc.cluster.local:27017"]
 
     processors:
       - add_cloud_metadata:
@@ -61,9 +60,9 @@ data:
         - network
         - process
         - process_summary
-        - core
-        - diskio
-        - socket
+        #- core
+        #- diskio
+        #- socket
       processes: ['.*']
       process.include_top_n:
         by_cpu: 5      # include top 5 processes by CPU
