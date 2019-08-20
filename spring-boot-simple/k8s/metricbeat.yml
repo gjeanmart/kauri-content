@@ -18,6 +18,7 @@ data:
           host: ${HOSTNAME}
           templates:
             - condition.equals:
+                kubernetes.namespace: default
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
