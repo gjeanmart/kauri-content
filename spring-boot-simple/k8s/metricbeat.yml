@@ -9,23 +9,60 @@ metadata:
 data:
   metricbeat.yml: |-
     metricbeat.config.modules:
+      # Mounted `metricbeat-daemonset-modules` configmap:
       path: ${path.config}/modules.d/*.yml
+      # Reload module configs as they change:
       reload.enabled: false
-
+    # To enable hints based autodiscover uncomment this (and comment out the section following, which uses regex matching autodiscover):
+    #metricbeat.autodiscover:
+    #  providers:
+    #    - type: kubernetes
+    #      host: ${NODE_NAME}
+    #      hints.enabled: true
     metricbeat.autodiscover:
       providers:
         - type: kubernetes
           host: ${HOSTNAME}
-          include_labels: ["app"]
           templates:
-
+            - condition.equals:
+                kubernetes.labels.app: redis
+              config:
+                - module: redis
+                  metricsets: ["info", "keyspace"]
+                  period: 1m
+                  hosts: ["${data.host}:6379"]
+                  password: 8YLQaUSNUX
+            - condition.equals:
+                kubernetes.labels.app: nginx-ingress
+              config:
+                - module: nginx
+                  metricsets: ["stubstatus"]
+                  period: 1m
+                  hosts: ["nginx-dev-nginx-ingress-controller-stats.dev:18080"]
+                  server_status_path: "nginx_status"
             - condition.equals:
                 kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
-                  #period: ${PERIOD}
-                  hosts: "mongo.default:27017"
+                  period: 1m
+                  hosts: ["mongo.default:27017"]
+            - condition.equals:
+                kubernetes.labels.app: kafka
+              config:
+                - module: kafka
+                  metricsets: ["consumergroup", "partition"]
+                  period: 1m
+                  hosts: ["${data.host}:9092"]
+            - condition.equals:
+                kubernetes.labels.app: zookeeper
+              config:
+                - module: zookeeper
+                # exception in ES: failed to parse field [zookeeper.server.version_date] of type [date] in document with id 'UL5zUmwBzu-J64SMhPug'. Preview of field's value: '03/23/2017 10:13 GMT'"
+                  enabled: false
+                  metricsets: ["mntr", "server"]
+                  period: 1m
+                  hosts: ["${data.host}:2181"]
 
     processors:
       - add_cloud_metadata:
@@ -37,6 +74,7 @@ data:
 
     setup.kibana:
       host: '${KIBANA_HOST:kibana}:${KIBANA_PORT:5601}'
+      path: ${KIBANA_PATH}
 
     setup.dashboards.enabled: true
 
