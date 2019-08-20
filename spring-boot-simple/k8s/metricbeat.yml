@@ -22,9 +22,9 @@ data:
           - network
           - process
           - process_summary
-          #- core
-          #- diskio
-          #- socket
+          - core
+          - diskio
+          - socket
         processes: ['.*']
         process.include_top_n:
           by_cpu: 5      # include top 5 processes by CPU
@@ -83,7 +83,7 @@ data:
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
-                  period: 1m
+                  period: ${PERIOD}
                   hosts: ["mongo.default:27017"]
 
     processors:
