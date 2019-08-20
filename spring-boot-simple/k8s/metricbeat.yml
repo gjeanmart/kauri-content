@@ -16,10 +16,9 @@ data:
       providers:
         - type: kubernetes
           host: ${HOSTNAME}
-          hints.enabled: true
           templates:
             - condition.equals:
-                kubernetes.labels.app: mongo
+                docker.container.image: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
