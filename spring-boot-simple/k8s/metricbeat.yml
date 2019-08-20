@@ -13,16 +13,7 @@ data:
     metricbeat.modules:
       - module: system
         period: ${PERIOD}
-        metricsets:
-          - cpu
-          - load
-          - memory
-          - network
-          - process
-          - process_summary
-          - core
-          - diskio
-          - socket
+        metricsets: ["cpu", "load", "memory", "network", "process", "process_summary", "core", "diskio", "socket"]
         processes: ['.*']
         process.include_top_n:
           by_cpu: 5      # include top 5 processes by CPU
@@ -30,9 +21,7 @@ data:
 
       - module: system
         period: ${PERIOD}
-        metricsets:
-          - filesystem
-          - fsstat
+        metricsets:  ["filesystem", "fsstat"]
         processors:
         - drop_event.when.regexp:
             system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
@@ -40,35 +29,18 @@ data:
       - module: docker
         period: ${PERIOD}
         hosts: ["unix:///var/run/docker.sock"]
-        metricsets:
-          - container
-          - cpu
-          - diskio
-          - healthcheck
-          - info
-          - memory
-          - network
+        metricsets: ["container", "cpu", "diskio", "healthcheck", "info", "memory", "network"]
 
       - module: kubernetes
         period: ${PERIOD}
         host: ${NODE_NAME}
         hosts: ["localhost:10255"]
-        metricsets:
-          - node
-          - system
-          - pod
-          - container
-          - volume
+        metricsets: ["node", "system", "pod", "container", "volume"]
 
       - module: kubernetes
         period: ${PERIOD}
         host: ${NODE_NAME}
-        metricsets:
-          - state_node
-          - state_deployment
-          - state_replicaset
-          - state_pod
-          - state_container
+        metricsets: ["state_node", "state_deployment", "state_replicaset", "state_pod", "state_container"]
         hosts: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
 
     # Configure specific service module based on k8s deployment
@@ -84,9 +56,6 @@ data:
                   period: ${PERIOD}
                   hosts: ["mongo.default:27017"]
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
-
-    processors:
-      - add_cloud_metadata:
 
     # Connection to ElasticSearch
     output.elasticsearch:
