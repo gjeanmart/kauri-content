@@ -10,7 +10,7 @@ data:
   metricbeat.yml: |-
     metricbeat.config.modules:
       path: ${path.config}/modules.d/*.yml
-      reload.enabled: true
+      reload.enabled: false
 
     metricbeat.autodiscover:
       providers:
@@ -18,12 +18,12 @@ data:
           host: ${HOSTNAME}
           templates:
             - condition.equals:
-                docker.container.image: mongo
+                kubernetes.labels.app: mongo
               config:
                 - module: mongodb
                   metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
                   period: ${PERIOD}
-                  hosts: ["mongo.default.svc.cluster.local:27017"]
+                  hosts: "mongo.default:27017"
 
     processors:
       - add_cloud_metadata:
@@ -40,6 +40,8 @@ data:
 
     setup.ilm:
       policy_file: /etc/indice-lifecycle.json
+
+    logging.level: debug
 ---
 apiVersion: v1
 kind: ConfigMap
