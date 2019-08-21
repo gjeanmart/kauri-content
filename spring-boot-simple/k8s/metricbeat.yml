@@ -164,7 +164,7 @@ spec:
           mountPath: /etc/metricbeat.yml
           readOnly: true
           subPath: metricbeat.yml
-        - name: indice-lifecycle
+        - name: metricbeat-indice-lifecycle
           mountPath: /etc/indice-lifecycle.json
           readOnly: true
           subPath: indice-lifecycle.json
@@ -190,7 +190,7 @@ spec:
         configMap:
           defaultMode: 0600
           name: metricbeat-config
-      - name: indice-lifecycle
+      - name: metricbeat-indice-lifecycle
         configMap:
           defaultMode: 0600
           name: metricbeat-indice-lifecycle

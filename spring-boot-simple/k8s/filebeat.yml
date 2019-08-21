@@ -159,7 +159,7 @@ spec:
           mountPath: /etc/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
-        - name: indice-lifecycle
+        - name: filebeat-indice-lifecycle
           mountPath: /etc/indice-lifecycle.json
           readOnly: true
           subPath: indice-lifecycle.json
@@ -178,7 +178,7 @@ spec:
         configMap:
           defaultMode: 0600
           name: filebeat-config
-      - name: indice-lifecycle
+      - name: filebeat-indice-lifecycle
         configMap:
           defaultMode: 0600
           name: filebeat-indice-lifecycle
@@ -216,7 +216,7 @@ metadata:
   labels:
     app: filebeat
 rules:
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources:
   - namespaces
   - pods
