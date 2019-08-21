@@ -40,7 +40,7 @@ spec:
           - "-javaagent:/apm-agent.jar"
           - "-Delastic.apm.active=$(ELASTIC_APM_ACTIVE)"
           - "-Delastic.apm.server_urls=$(ELASTIC_APM_SERVER)"
-          - "-Delastic.apm.service_name=kauri-monolith"
+          - "-Delastic.apm.service_name=spring-boot-simple"
           - "-jar"
           - "app.jar"
         env:
