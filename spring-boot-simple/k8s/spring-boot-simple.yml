@@ -35,8 +35,20 @@ spec:
       - image: gjeanmart/spring-boot-simple:0.0.1-SNAPSHOT
         imagePullPolicy: Always
         name: spring-boot-simple
+        command:
+          - "java"
+          - "-javaagent:/apm-agent.jar"
+          - "-Delastic.apm.active=$(ELASTIC_APM_ACTIVE)"
+          - "-Delastic.apm.server_urls=$(ELASTIC_APM_SERVER)"
+          - "-Delastic.apm.service_name=kauri-monolith"
+          - "-jar"
+          - "app.jar"
         env:
           - name: SPRING_DATA_MONGODB_HOST
             value: mongo
+          - name: ELASTIC_APM_ACTIVE
+            value: "true"
+          - name: ELASTIC_APM_SERVER
+            value: http://apm-server.monitoring.svc.cluster.local:8200
         ports:
         - containerPort: 8080
