@@ -41,6 +41,7 @@ spec:
           - "-Delastic.apm.active=$(ELASTIC_APM_ACTIVE)"
           - "-Delastic.apm.server_urls=$(ELASTIC_APM_SERVER)"
           - "-Delastic.apm.service_name=spring-boot-simple"
+          - "-Delastic.apm.disable_instrumentations=dispatcher-servle"
           - "-jar"
           - "app.jar"
         env:
