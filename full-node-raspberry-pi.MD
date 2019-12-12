@@ -1,4 +1,7 @@
 
+[Original Article](https://kauri.io/article/9695fcca217f46feb355245275835fc0)
+
+
 ## Introduction
 
 My wife recently offered me the latest [**Raspberry Pi 4 (model B) 4GB**](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/). So I was really excited to try to sync an **Ethereum Full Node** on the number one Single-Board Computer (SBC).
