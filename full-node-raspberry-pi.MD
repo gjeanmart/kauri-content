@@ -1,24 +1,33 @@
 
 ## Introduction
 
-My wife recently offered me the latest [**Raspberry Pi 4 (model B)**](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/). So I was really excited to try to sync an **Ethereum Full Node** on the number one Single-Board Computer (SBC).
+My wife recently offered me the latest [**Raspberry Pi 4 (model B) 4GB**](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/). So I was really excited to try to sync an **Ethereum Full Node** on the number one Single-Board Computer (SBC).
 
 Syncing Ethereum has always been a pain point for many people because it's a complex process with multiple options, including different verification modes which requires different setup that can cost a lot of money and takes weeks to sync.
 
 Here is a summary of the different options available to synchronise the Ethereum blockchain with [Geth (Go-Ethereum)](https://github.com/ethereum/go-ethereum):
 
-- **`full` syncs the full blockchain (block headers, block bodies and validates everything from genesis block)**
-A full sync is commonly called an **archive** node and stores all the historical state data blocks after blocks of Ethereum since the Genesis. This takes more than 2.3 TB of space, requires a very powerful machine (multi-core CPU, 16GB RAM) and takes a few weeks to processed entirely.
-But very few people (such as Block Explorers) need an archive node. Generally people only require the current state, or perhaps the last month in some cases, but not the entire history.
+**Blockchain sync mode [`--syncmode`]:**
 
-- **`fast` syncs pruned blockchain data (not process transactions until the current block)**
-A fast sync is still a full node but after downloading and verifying the data, it prunes the data to keep only the last 1024 historical states which saves a lot of space: it takes up less than 200 GB at this stage (Sept 2019).
+- **`full` sync**: A full sync downloads all the data (block headers and block bodies), processes the entire blockchain one link at a time, and replays all transactions that ever happened in history (transaction processing and PoW verification). This method is the most traditional and stable but can take a very a long time (up to a few weeks) and would require a more powerful machine. At the end of the process, the node is a full node.
 
-- **`light` syncs directly to the last few blocks, does not store the whole blockchain in database** 
-A light sync, unlike full and fast, is not a full node as it doesn't store the entire blockchain but only the block headers, and it depends on full nodes. But this approach, less secure and more suitable for IOT/mobiles, only uses 100MB of space.
+- **`fast` sync**: A fast sync also downloads all the data (block headers and block bodies) but exchanges processing power for bandwidth usage. Instead of processing all the transactions that ever happened, fast sync downloads all the transaction receipts and the entire recent state database and perform a PoW verification.
+When the chain reaches a recent state (head - 1024 blocks), geth switches to full sync mode, import the remaining blocks and process them as in the classical sync (full) to obtain a full node.
+
+- **`light` sync**: Light mode syncs directly to the last few blocks, does not store the whole blockchain in database. Unlike full and fast, is not a full node as it doesn't store the entire blockchain but only the block headers, and it depends on full nodes. But this approach, less secure and more suitable for IOT/mobiles, only uses 100MB of space.
 
 
-In this guide we will follow the second mode, **fast**, to run a full-node on a RaspberryPi 4. Some people might ask what the benefits are of running your own node. Here are some examples:
+**Blockchain garbage collection mode [`--gcmode`]:**
+Garbage collection is used to discard old state tries and save some space.
+
+- **`--gcmode full`** enables the garbage collection to keep in memory only the latest 128 tries. This saves a lot of space and it takes less than 200 GB at this stage (Sept 2019) to run a full node in this setup.
+
+- **`--gcmode archive`** disables the garbage collection and keep all the historical state data blocks after blocks of Ethereum since the Genesis. (bear in mind, it takes more than 2.3 TB of space). But very few people (such as Block Explorers) need an archive node. 
+
+<br />
+
+
+In this guide we will follow the second synchronisation mode, **fast** (with **full** garbage collection), to run a full-node on a RaspberryPi 4. Some people might ask what the benefits are of running your own node. Here are some examples:
 - You will own a trusted Ethereum stack you can rely on to manage your assets and send transactions to the network yourself (remote nodes are generally reliable but are controlled by 3rd parties and typically throttle heavy usage).
 - You can help secure the network; the more independent nodes running the more copies there are of the blockchain and the more resilient it is.
 - You want to make the network faster and more secure; the more nodes the lower the latency in sharing blocks and the more copies of the blockchain that exist.
@@ -37,7 +46,7 @@ We will start with an example of setup using a Raspberry Pi 4, a SSD and all the
 
 ### Board
 
-As mentioned, the board is the latest [Raspberry 4 (model B - 4GB)](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/) with the following specification:
+As mentioned, the board is the latest [Raspberry 4 (model B) - 4GB](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/) with the following specification:
 
 ![](https://i.imgur.com/NOOqKVV.png)
 
@@ -50,9 +59,9 @@ As mentioned, the board is the latest [Raspberry 4 (model B - 4GB)](https://www.
 
 ### SD Card
 
-To host the operating system (OS), I use a [16GB Sandisk Ultra Class 10 MicroSD](https://www.amazon.com/SanDisk-Class-UHS-I-Memory-SDSDUNC-016G-GN6IN/dp/B0143RTB1E)
+To host the operating system (OS), I use a [SanDisk 16GB Ultra microSD](https://www.amazon.com/Sandisk-Ultra-Micro-UHS-I-Adapter/dp/B073K14CVB)
 
-![](https://i.imgur.com/YwKUSY4.png)
+![](https://api.kauri.io:443/ipfs/QmRfSNZLcX56Y9FunZQxT3aMY7Z69d2xBVznT2RHxwsJdw)
 
 **Recommended price:** $5
 
@@ -110,7 +119,7 @@ The total cost for this setup is **$160** with an estimated annual recurring cos
 
 
 ![](https://i.imgur.com/3exyprE.png)
-*Result of the hardware installation*
+<center><i>Result of the hardware installation</i></center>
 
 <br />
 
@@ -157,7 +166,7 @@ $ touch ssh
 
 Your network router should provide the list of all the connected devices via Ethernet and WIFI.
 
-![](https://i.imgur.com/wIAaAil.png)
+![](https://i.imgur.com/lo1w44G.png)
 
 <center><i>Example - VirginMedia Hub</i></center>
 
@@ -192,6 +201,12 @@ Current password: raspberry
 New password: $3cret
 Retype new password: $3cret
 passwd: password updated successfully
+```
+
+**11. Install VIM as a command line editor**
+
+```shell
+$ sudo apt install vim
 ```
 
 **11. Change the hostname**
@@ -244,7 +259,7 @@ static routers=192.168.0.1
 static domain_name_servers=192.168.100.4
 ```
 
-*Change the interface `eth0` if necessary*
+*Change the interface `eth0`, router address and DNS servers accordingly to your network config.*
 
 **14. Reboot**
 
@@ -271,7 +286,7 @@ As explained, only SSDs are fast enough (I/O speed) to sync Geth to the Ethereum
 
 ![](https://www.memecreator.org/static/images/memes/4926846.jpg)
 
-**1. Plug the SSD into the adapter and the adapter into the USB3.0 (blue) port**
+**1. Plug the SSD to the USB3.0 (blue) port**
 
 **2. Find the disk name (drive)**
 
@@ -300,7 +315,7 @@ Disk identifier: 0x41d0909f
 If you disk is new and just out of the package, you will need to create a partition.
 
 ```shell
-$ $ sudo mkfs.ext4 /dev/sda
+$ sudo mkfs.ext4 /dev/sda
 mke2fs 1.44.5 (15-Dec-2018)
 /dev/sda contains a ext4 file system
 \\tlast mounted on /mnt/ssd on Mon Sep  9 21:06:47 2019
@@ -363,7 +378,15 @@ Reboot the system
 $ sudo reboot
 ```
 
-**6. Configure te swap on the SSD**
+You can verify the disk is correctly mounted on startup with the following command:
+
+```shell
+$ df -ha /dev/sda
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda        458G   73M  435G   1% /mnt/ssd
+``` 
+
+**6. Configure Swap on the SSD**
 
 Geth can consume a lot of memory during the syncing process so it is highly suggested that you create a swap file (overflow RAM) to prevent any kind of OutOfMemory error. It is also strongly advised to put the swap file on the fastest disk, which is the SSD in our case.
 
@@ -371,13 +394,14 @@ Geth can consume a lot of memory during the syncing process so it is highly sugg
 
 Edit the file `/etc/dphys-swapfile` 
 
-- replace `CONF_SWAPSIZE=100` by `CONF_SWAPSIZE=2000` to allocate a 2GB SWAP
+- replace `CONF_SWAPSIZE=100` by `CONF_SWAPSIZE=8192` to allocate a 8GB SWAP
 - replace `CONF_SWAPFILE=/var/swap` by `CONF_SWAPFILE=/mnt/ssd/swap.file` to locate the swap on the SSD
 
 ```shell
 $ sudo vi /etc/dphys-swapfile
 
-CONF_SWAPSIZE=2000
+CONF_SWAPSIZE=8192
+CONF_MAXSWAP=8192
 CONF_SWAPFILE=/mnt/ssd/swap.file
 ```
 
@@ -409,13 +433,6 @@ $ dd if=/mnt/ssd/deleteme.dat of=/dev/null bs=32M count=64 iflag=direct
 64+0 records in
 64+0 records out
 2147483648 bytes (2.1 GB, 2.0 GiB) copied, 22.3361 s, 96.1 MB/s
-```
-
-```shell
-$ sudo hdparm -t --direct /dev/sda
-
-/dev/sda:
- Timing O_DIRECT disk reads: 938 MB in  3.00 seconds = 312.27 MB/sec
 ```
 
 Below 50MB/s (write/read), I wouldn't recommend trying to syncing a Geth node because you might never be able to reach the head and complete the sync.
@@ -453,18 +470,18 @@ Now our system is ready for you to install and configure Geth.
 
 1. Download the archive in `~/download`
 
-*For a Raspberry Pi 4, we need to [download](https://golang.org/dl/) Golang for Architecture ARMv6: `go1.13.linux-armv6l.tar.gz`*
+*For a Raspberry Pi 4, we need to [download](https://golang.org/dl/) Golang for Architecture ARMv6: `go1.13.1.linux-armv6l.tar.gz`*
 
 ```shell
 $ mkdir ~/download
 $ cd ~/download
-$ wget https://dl.google.com/go/go1.13.linux-armv6l.tar.gz
+$ wget https://dl.google.com/go/go1.13.1.linux-armv6l.tar.gz
 ```
 
 2. Extract it into `/usr/local`
 
 ```shell
-$ sudo tar -C /usr/local -xvf go1.13.linux-armv6l.tar.gz
+$ sudo tar -C /usr/local -xvf go1.13.1.linux-armv6l.tar.gz
 ```
 
 3. Change owner to root, and change permissions
@@ -474,14 +491,7 @@ $ sudo chown root:root /usr/local/go
 $ sudo chmod 755 /usr/local/go
 ```
 
-4. Create a workspace folder, and 3 sub-folders inside it
-
-```shell
-$ mkdir ~/go_workspace{,/bin,/pkg,/src}
-```
-
-
-5. Set environment variables. Edit the file `/etc/profile` and append this line at the end:
+4. Set environment variables. Edit the file `/etc/profile` and append this line at the end:
 
 ```shell
 $ sudo vi /etc/profile 
@@ -491,34 +501,22 @@ $ sudo vi /etc/profile
 export PATH=$PATH:/usr/local/go/bin
 ```
 
-6. Edit the file `~/.profile` and add those two lines at the end:
-
-```shell
-$ sudo vi  ~/.profile
-```
-
-```shell
-export GOPATH=$HOME/go_workspace
-export PATH=$HOME/go_workspace/bin:$PATH
-```
-
-
-7. Reboot
+5. Reboot
 
 ```shell
 $ sudo reboot
 ```
 
-8. Try it
+6. Try it
 
 ```shell
 $ go version
-go version go1.13 linux/arm
+go version go1.13.1 linux/arm
 ```
 
 #### b. Install Geth from source 
 
-To install Ethereum client **Geth**, we will compile it from the GitHub source.
+To install Ethereum client **Geth**, we will compile it from the [GitHub source](https://github.com/ethereum/go-ethereum).
 
 1. Clone the repository
 
@@ -547,14 +545,14 @@ $ sudo mv ~/go-ethereum/build/bin/geth /usr/local/bin
 ```shell
 $ geth version 
 Geth
-Version: 1.9.5-stable
-Git Commit: a1c09b93871dd3770adffb177086abda1b2ff3af
+Version: 1.9.6-stable
+Git Commit: bd05968077f27f7eb083404dd8448157996a8788
 Architecture: arm
 Protocol Versions: [63]
 Network Id: 1
-Go Version: go1.13
+Go Version: go1.13.1
 Operating System: linux
-GOPATH=/home/pi/go_workspace
+GOPATH=
 GOROOT=/usr/local/go
 ```
 
@@ -678,6 +676,8 @@ The charts below shows some metrics during the syncing process. We an observe th
 
 ![](https://imgur.com/sGkyPwA.png)
 
+*Follow [this article](https://kauri.io/article/5ab5c4d558e04a73accebc652ef2246b) to learn how to monitor Geth with GoogleSheet.*
+
 During the process, you will observe some strange behaviours which are common to many people.
 
 - **Between 64 and 128 blocks behind**
@@ -749,7 +749,9 @@ This guide began from a discussion about how hard it is to keep an Ethereum node
 
 ## References
 
-- [Péter Szilágyi (aka karalabe) on Github explaining fast sync - March 2018](https://github.com/ethereum/go-ethereum/issues/16218#issuecomment-371454280)
+- [Péter Szilágyi (aka karalabe) on Github - fast sync - March 2018](https://github.com/ethereum/go-ethereum/issues/16218#issuecomment-371454280)
+- [Péter Szilágyi (aka karalabe) on Github - fast synchronization algorithm - Oct 2015](https://github.com/ethereum/go-ethereum/pull/1889)
 - [Getting Deep Into Geth: Why Syncing Ethereum Node Is Slow (Vaibhav Saini) - July 2018](https://hackernoon.com/getting-deep-into-geth-why-syncing-ethereum-node-is-slow-1edb04f9dc5)
 - [Dispelling Myths: How a Pruned Ethereum Node Can Fully Verify the Blockchain (Julian Martinez) - Sept 2018](https://medium.com/coinmonks/how-a-pruned-ethereum-node-can-fully-verify-the-blockchain-bbe9f29663ed)
-- [Intro to Beam Sync (Jason Carver) - Sept 2019](https://medium.com/@jason.carver/intro-to-beam-sync-a0fd168be14a)\"
+- [Intro to Beam Sync (Jason Carver) - Sept 2019](https://medium.com/@jason.carver/intro-to-beam-sync-a0fd168be14a)
+- [geth - command line options](https://github.com/ethereum/go-ethereum/wiki/Command-Line-Options)
